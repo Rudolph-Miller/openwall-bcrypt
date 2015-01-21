@@ -37,7 +37,7 @@ check: crypt_test
 	./crypt_test
 
 libbcrypt.so.$(VERSION): $(BLOWFISH_OBJS)
-	$(CC) -shared -W1,-soname,libbcrypt.so.1 -o $@ $(BLOWFISH_OBJS)
+	$(CC) -shared -Wl,-soname,libbcrypt.so.1 -o $@ $(BLOWFISH_OBJS)
 
 crypt_test: $(TEST_OBJS)
 	$(LD) $(LDFLAGS) $(TEST_OBJS) -o $@
