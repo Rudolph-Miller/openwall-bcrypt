@@ -9,6 +9,14 @@ CC = gcc
 AS = $(CC)
 LD = $(CC)
 RM = rm -f
+SYSTEM=$(shell uname 2>/dev/null)
+ifeq ($(SYSTEM), Darwin)
+SHARED_OBJ = libbcrypt.$(VERSION).dylib
+SHAREDFLAGS = -shared -W1,-soname,$(SHARED_OBJ)
+else
+SHARED_OBJ = libbcrypt.$(VERSION).so
+SHAREDFLAGS = -shared -Wl,-soname,$(SHARED_OBJ)
+endif
 CFLAGS = -fPIC -Wall -O2 -fomit-frame-pointer -funroll-loops
 ASFLAGS = -c
 LDFLAGS = -s
@@ -31,13 +39,13 @@ EXTRA_MANS = \
 
 all: $(CRYPT_OBJS) man
 
-library: libbcrypt.so.$(VERSION)
+library: $(SHARED_OBJ)
 
 check: crypt_test
 	./crypt_test
 
-libbcrypt.so.$(VERSION): $(BLOWFISH_OBJS)
-	$(CC) -shared -Wl,-soname,libbcrypt.so.1 -o $@ $(BLOWFISH_OBJS)
+$(SHARED_OBJ): $(BLOWFISH_OBJS)
+	$(CC) $(SHAREDFLAGS) -o $@ $(BLOWFISH_OBJS)
 
 crypt_test: $(TEST_OBJS)
 	$(LD) $(LDFLAGS) $(TEST_OBJS) -o $@
@@ -66,4 +74,4 @@ $(EXTRA_MANS):
 	$(AS) $(ASFLAGS) $*.S
 
 clean:
-	$(RM) crypt_test crypt_test_threads *.o $(EXTRA_MANS) core libbcrypt.so.$(VERSION)
+	$(RM) crypt_test crypt_test_threads *.o $(EXTRA_MANS) core $(SHARED_OBJ)
