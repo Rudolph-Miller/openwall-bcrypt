@@ -12,7 +12,7 @@ RM = rm -f
 SYSTEM=$(shell uname 2>/dev/null)
 ifeq ($(SYSTEM), Darwin)
 SHARED_OBJ = libbcrypt.$(VERSION).dylib
-SHAREDFLAGS = -shared -W1,-soname,$(SHARED_OBJ)
+SHAREDFLAGS = -shared -W1,-install_name,$(SHARED_OBJ)
 else
 SHARED_OBJ = libbcrypt.$(VERSION).so
 SHAREDFLAGS = -shared -Wl,-soname,$(SHARED_OBJ)
